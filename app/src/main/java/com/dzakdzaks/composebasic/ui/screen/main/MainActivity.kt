@@ -1,6 +1,7 @@
 package com.dzakdzaks.composebasic.ui.screen.main
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,11 +17,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -43,6 +44,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             ComposeBasicTheme {
                 MyApp()
@@ -58,17 +60,12 @@ private fun MyApp() {
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-    val scrollBehavior = remember(decayAnimationSpec) {
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
-    }
 
     BoxWithConstraints {
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 if (showTopBar(currentRoute = currentRoute)) {
-                    LargeTopAppBar(
+                    SmallTopAppBar(
                         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -76,14 +73,6 @@ private fun MyApp() {
                             titleContentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         title = { Text(stringResource(id = R.string.app_name)) },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.navigate(OtherScreen.About.route) }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Info,
-                                    contentDescription = "Info"
-                                )
-                            }
-                        },
                         actions = {
                             IconButton(onClick = { navController.navigate(OtherScreen.Search.route) }) {
                                 Icon(
@@ -91,8 +80,13 @@ private fun MyApp() {
                                     contentDescription = "Search"
                                 )
                             }
-                        },
-                        scrollBehavior = scrollBehavior
+                            IconButton(onClick = { navController.navigate(OtherScreen.About.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Info,
+                                    contentDescription = "Info"
+                                )
+                            }
+                        }
                     )
                 }
             },
@@ -152,6 +146,7 @@ private fun MyApp() {
                             )
                         ) + fadeOut(animationSpec = tween(300))
                     } else {
+                        Log.d("walwaw", "exitTransition")
                         slideOutHorizontally(
                             targetOffsetX = { -constraints.maxWidth / 2 },
                             animationSpec = tween(
@@ -161,7 +156,7 @@ private fun MyApp() {
                         ) + fadeOut(animationSpec = tween(300))
                     }
                 }, popEnterTransition = {
-                    if (currentRoute == MainScreen.Favorite.route) {
+                    if (currentRoute == MainScreen.Home.route) {
                         slideInHorizontally(
                             initialOffsetX = { constraints.maxWidth / 2 },
                             animationSpec = tween(
@@ -170,6 +165,7 @@ private fun MyApp() {
                             )
                         ) + fadeIn(animationSpec = tween(300))
                     } else {
+                        Log.d("walwaw", "popEnterTransition")
                         slideInHorizontally(
                             initialOffsetX = { -constraints.maxWidth / 2 },
                             animationSpec = tween(
