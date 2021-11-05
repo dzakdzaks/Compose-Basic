@@ -1,54 +1,154 @@
 package com.dzakdzaks.composebasic.ui.screen.home
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dzakdzaks.composebasic.R
 import com.dzakdzaks.composebasic.ui.theme.ComposeBasicTheme
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.glide.GlideImage
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
-@ExperimentalMaterial3Api
 @Composable
-fun HomeScreen(navController: NavController, names: List<String> = List(1000) { "Item $it" }) {
+fun HomeScreen(
+    navController: NavController,
+    names: List<String> = List(10) { "Item $it" },
+) {
     LazyColumn(
-        modifier = Modifier.padding()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding()
     ) {
+        item {
+            HorizontalPagerHome()
+        }
+        item {
+            MenuHome(menus = HomeMenu.generateHomeMenu())
+        }
         items(items = names) { name ->
             Greeting(name = name)
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @ExperimentalMaterialApi
+@Composable
+private fun HorizontalPagerHome() {
+    Column {
+        val pagerState = rememberPagerState()
+        HorizontalPager(
+            count = 10,
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                backgroundColor = MaterialTheme.colorScheme.primary,
+                onClick = {
+
+                }
+            ) {
+                GlideImage(
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.fillMaxSize(),
+                    imageModel = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kelimutu_2008-08-08.jpg/800px-Kelimutu_2008-08-08.jpg",
+                    circularReveal = CircularReveal(250)
+                )
+            }
+        }
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp),
+            activeColor = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun MenuHome(menus: List<HomeMenu>) {
+    BoxWithConstraints {
+        FlowRow {
+            menus.forEach { menu ->
+                Card(
+                    modifier = Modifier
+                        .width(this@BoxWithConstraints.maxWidth / 2)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                        .aspectRatio(1f),
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    onClick = {
+
+                    }
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            modifier = Modifier.size(48.dp),
+                            imageVector = menu.icon,
+                            contentDescription = stringResource(id = menu.title),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                        )
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = stringResource(id = menu.title),
+                            modifier = Modifier.padding(8.dp),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Greeting(name: String) {
     Card(
@@ -112,7 +212,6 @@ private fun CardContent(name: String) {
 }
 
 @ExperimentalMaterialApi
-@ExperimentalMaterial3Api
 @Preview(
     showBackground = true, widthDp = 320,
     uiMode = Configuration.UI_MODE_NIGHT_YES, name = "DefaultPreviewDark"

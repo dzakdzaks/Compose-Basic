@@ -38,10 +38,11 @@ import com.dzakdzaks.composebasic.ui.theme.ComposeBasicTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 
-@ExperimentalAnimationApi
+
 @ExperimentalMaterialApi
-@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MyApp() {
     val navController = rememberAnimatedNavController()

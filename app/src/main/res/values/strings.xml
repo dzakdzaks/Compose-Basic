@@ -4,4 +4,11 @@
     <string name="show_more">Show more</string>
     <string name="home">Home</string>
     <string name="favorite">Favorite</string>
+    <string name="agents">Agents</string>
+    <string name="competitiveTier">Competitive Tiers</string>
+    <string name="gameModes">Game Modes</string>
+    <string name="currencies">Currencies</string>
+    <string name="maps">Maps</string>
+    <string name="weapons">Weapons</string>
+    <string name="playerCards">Player Cards</string>
 </resources>
