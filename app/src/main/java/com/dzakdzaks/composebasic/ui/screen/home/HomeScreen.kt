@@ -33,8 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dzakdzaks.composebasic.R
+import com.dzakdzaks.composebasic.module.agent.domain.model.Agent
 import com.dzakdzaks.composebasic.ui.theme.ComposeBasicTheme
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -49,8 +51,9 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun HomeScreen(
     navController: NavController,
-    names: List<String> = List(10) { "Item $it" },
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val state = viewModel.state.value
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -62,8 +65,13 @@ fun HomeScreen(
         item {
             MenuHome(menus = HomeMenu.generateHomeMenu())
         }
-        items(items = names) { name ->
-            Greeting(name = name)
+        items(items = state.data) { agent ->
+            Greeting(agent = agent)
+        }
+        item {
+            if (state.errorMessage.isNotBlank()) {
+                Text(text = state.errorMessage)
+            }
         }
     }
 }
@@ -77,7 +85,9 @@ private fun HorizontalPagerHome() {
         HorizontalPager(
             count = 10,
             state = pagerState,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
         ) {
             Card(
                 modifier = Modifier
@@ -150,7 +160,7 @@ private fun MenuHome(menus: List<HomeMenu>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun Greeting(name: String) {
+private fun Greeting(agent: Agent) {
     Card(
         backgroundColor = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(4.dp),
@@ -161,12 +171,12 @@ private fun Greeting(name: String) {
 
         }
     ) {
-        CardContent(name = name)
+        CardContent(agent = agent)
     }
 }
 
 @Composable
-private fun CardContent(name: String) {
+private fun CardContent(agent: Agent) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
     Row(
@@ -185,16 +195,19 @@ private fun CardContent(name: String) {
                 .weight(1f)
                 .padding(12.dp)
         ) {
-            Text(text = "Hello, ")
             Text(
-                text = name, style = MaterialTheme.typography.bodyLarge.copy(
+                text = agent.displayName.toString(), style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 )
             )
             if (isExpanded) {
                 Text(
-                    text = ("Composem ipsum color sit lazy, " +
-                            "padding theme elit, sed do bouncy. ").repeat(4)
+                    text = agent.description.toString()
+                )
+            } else {
+                Text(
+                    text = agent.description.toString(),
+                    maxLines = 2,
                 )
             }
         }

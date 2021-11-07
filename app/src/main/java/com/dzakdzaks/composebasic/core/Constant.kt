@@ -1,4 +1,4 @@
-package com.dzakdzaks.composebasic.ui.common
+package com.dzakdzaks.composebasic.core
 
 object Constant {
 

@@ -1,4 +1,4 @@
-package com.dzakdzaks.composebasic.ui.data.remote
+package com.dzakdzaks.composebasic.core
 
 object ApiRoute {
 

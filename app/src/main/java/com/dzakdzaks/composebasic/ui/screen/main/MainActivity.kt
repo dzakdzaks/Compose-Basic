@@ -38,9 +38,10 @@ import com.dzakdzaks.composebasic.ui.theme.ComposeBasicTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.pager.ExperimentalPagerApi
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {

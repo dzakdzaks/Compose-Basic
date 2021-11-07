@@ -1,19 +1,20 @@
-package com.dzakdzaks.composebasic.ui.data.dto.agent
+package com.dzakdzaks.composebasic.module.agent.data.remote.dto
 
 
+import com.dzakdzaks.composebasic.module.agent.domain.model.Agent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Agent(
+data class AgentDto(
     @SerialName("abilities")
-    val abilities: List<Ability>?,
+    val abilities: List<AbilityDto>?,
     @SerialName("assetPath")
     val assetPath: String?,
     @SerialName("bustPortrait")
     val bustPortrait: String?,
     @SerialName("characterTags")
-    val characterTags: String?,
+    val characterTags: List<String>?,
     @SerialName("description")
     val description: String?,
     @SerialName("developerName")
@@ -37,9 +38,32 @@ data class Agent(
     @SerialName("killfeedPortrait")
     val killfeedPortrait: String?,
     @SerialName("role")
-    val role: Role?,
+    val role: RoleDto?,
     @SerialName("uuid")
     val uuid: String?,
     @SerialName("voiceLine")
-    val voiceLine: VoiceLine?
+    val voiceLine: VoiceLineDto?
 )
+
+fun AgentDto.toAgents(): Agent {
+    return Agent(
+        uuid = uuid,
+        description = description,
+        abilities = abilities?.toAbilities(),
+        assetPath = assetPath,
+        bustPortrait = bustPortrait,
+        characterTags = characterTags,
+        developerName = developerName,
+        isBaseContent = isBaseContent,
+        displayIcon = displayIcon,
+        displayIconSmall = displayIconSmall,
+        displayName = displayName,
+        fullPortrait = fullPortrait,
+        isAvailableForTest = isAvailableForTest,
+        isFullPortraitRightFacing = isFullPortraitRightFacing,
+        isPlayableCharacter = isPlayableCharacter,
+        killfeedPortrait = killfeedPortrait,
+        role = role?.toRole(),
+        voiceLine = voiceLine?.toVoiceLine(),
+    )
+}
