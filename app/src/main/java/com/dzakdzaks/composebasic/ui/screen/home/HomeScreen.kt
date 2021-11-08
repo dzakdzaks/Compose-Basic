@@ -53,7 +53,7 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+//    val state = viewModel.state.value
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -63,16 +63,16 @@ fun HomeScreen(
             HorizontalPagerHome()
         }
         item {
-            MenuHome(menus = HomeMenu.generateHomeMenu())
+            MenuHome(navController = navController, menus = HomeMenu.generateHomeMenu())
         }
-        items(items = state.data) { agent ->
-            Greeting(agent = agent)
-        }
-        item {
-            if (state.errorMessage.isNotBlank()) {
-                Text(text = state.errorMessage)
-            }
-        }
+//        items(items = state.data) { agent ->
+//            Greeting(agent = agent)
+//        }
+//        item {
+//            if (state.errorMessage.isNotBlank()) {
+//                Text(text = state.errorMessage)
+//            }
+//        }
     }
 }
 
@@ -118,7 +118,10 @@ private fun HorizontalPagerHome() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun MenuHome(menus: List<HomeMenu>) {
+private fun MenuHome(
+    navController: NavController,
+    menus: List<HomeMenu>
+) {
     BoxWithConstraints {
         FlowRow {
             menus.forEach { menu ->
@@ -129,7 +132,7 @@ private fun MenuHome(menus: List<HomeMenu>) {
                         .aspectRatio(1f),
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     onClick = {
-
+                        navController.navigate(menu.route)
                     }
                 ) {
                     Column(

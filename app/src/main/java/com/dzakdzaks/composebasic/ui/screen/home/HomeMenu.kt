@@ -16,7 +16,6 @@ sealed class HomeMenu(val route: String, @StringRes val title: Int, val icon: Im
     object PlayerCards : HomeMenu("playerCards", R.string.playerCards, Icons.Filled.Style)
 
     companion object {
-
         fun generateHomeMenu(): List<HomeMenu> {
             return listOf(
                 Agents,
@@ -28,6 +27,5 @@ sealed class HomeMenu(val route: String, @StringRes val title: Int, val icon: Im
                 PlayerCards,
             )
         }
-
     }
 }

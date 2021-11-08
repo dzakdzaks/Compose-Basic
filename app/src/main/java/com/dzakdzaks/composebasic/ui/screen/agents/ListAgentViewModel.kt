@@ -1,4 +1,4 @@
-package com.dzakdzaks.composebasic.ui.screen.home
+package com.dzakdzaks.composebasic.ui.screen.agents
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class ListAgentViewModel @Inject constructor(
     private val getAgentsUseCase: GetAgentsUseCase
 ): ViewModel() {
 

@@ -29,7 +29,9 @@ import com.dzakdzaks.composebasic.R
 import com.dzakdzaks.composebasic.ui.screen.MainScreen
 import com.dzakdzaks.composebasic.ui.screen.OtherScreen
 import com.dzakdzaks.composebasic.ui.screen.about.AboutScreen
+import com.dzakdzaks.composebasic.ui.screen.agents.ListAgentScreen
 import com.dzakdzaks.composebasic.ui.screen.favorite.FavoriteScreen
+import com.dzakdzaks.composebasic.ui.screen.home.HomeMenu
 import com.dzakdzaks.composebasic.ui.screen.home.HomeScreen
 import com.dzakdzaks.composebasic.ui.screen.search.SearchScreen
 import com.dzakdzaks.composebasic.ui.screen.showBottomBar
@@ -220,6 +222,25 @@ private fun MyApp() {
                     ) + fadeOut(animationSpec = tween(300))
                 }) {
                     AboutScreen(navController = navController)
+                }
+                composable(HomeMenu.Agents.route, enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { constraints.maxWidth / 2 },
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) + fadeIn(animationSpec = tween(300))
+                }, popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { constraints.maxWidth / 2 },
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) + fadeOut(animationSpec = tween(300))
+                }) {
+                    ListAgentScreen()
                 }
             }
         }
