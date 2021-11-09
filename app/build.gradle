@@ -82,12 +82,14 @@ dependencies {
     //Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
-    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager:0.12.0"
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.12.0"
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanist_version"
 
     //Image Loader
     implementation "com.github.skydoves:landscapist-glide:1.4.1"
+    implementation "io.coil-kt:coil:1.2.2"
+    implementation "com.flaviofaria:kenburnsview:1.0.7"
 
     //Dagger - Hilt
     implementation "com.google.dagger:hilt-android:2.38.1"

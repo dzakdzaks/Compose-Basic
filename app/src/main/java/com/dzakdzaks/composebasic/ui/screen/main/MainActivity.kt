@@ -240,7 +240,7 @@ private fun MyApp() {
                         )
                     ) + fadeOut(animationSpec = tween(300))
                 }) {
-                    ListAgentScreen()
+                    ListAgentScreen(navController = navController)
                 }
             }
         }

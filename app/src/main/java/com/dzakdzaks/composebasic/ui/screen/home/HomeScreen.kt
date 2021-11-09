@@ -1,11 +1,16 @@
 package com.dzakdzaks.composebasic.ui.screen.home
 
 import android.content.res.Configuration
+import android.graphics.PorterDuff
+import android.widget.ImageView
+import android.widget.RatingBar
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,34 +22,33 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.load
 import com.dzakdzaks.composebasic.R
 import com.dzakdzaks.composebasic.module.agent.domain.model.Agent
 import com.dzakdzaks.composebasic.ui.theme.ComposeBasicTheme
+import com.flaviofaria.kenburnsview.KenBurnsView
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
-import com.skydoves.landscapist.CircularReveal
-import com.skydoves.landscapist.glide.GlideImage
+import com.google.accompanist.pager.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
@@ -80,40 +84,122 @@ fun HomeScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun HorizontalPagerHome() {
-    Column {
-        val pagerState = rememberPagerState()
-        HorizontalPager(
-            count = 10,
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-        ) {
-            Card(
+    BoxWithConstraints {
+        Column {
+            val pagerState = rememberPagerState(
+                pageCount = places.size,
+                initialOffscreenLimit = 2
+            )
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                backgroundColor = MaterialTheme.colorScheme.primary,
-                onClick = {
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) { page ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            val pageOffset =
+                                calculateCurrentOffsetForPage(page).absoluteValue
 
+                            lerp(
+                                start = 0.85f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            ).also { scale ->
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                        }
+                        .padding(
+                            start = 12.dp,
+                            end = 12.dp,
+                        ),
+                    shape = RoundedCornerShape(24.dp),
+                    backgroundColor = Color.Gray
+                ) {
+                    val place = places[page]
+                    Box {
+                        val customView = KenBurnsView(LocalContext.current).also { imageView ->
+                            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                            imageView.load(place.url)
+                        }
+                        AndroidView(
+                            factory = { customView },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(Color(android.graphics.Color.parseColor("#80000000")))
+                        ) {}
+
+                        Column(
+                            Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(16.dp)
+                        ) {
+
+                            Text(
+                                text = place.title,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            val ratingBar = RatingBar(
+                                LocalContext.current, null, R.attr.ratingBarStyleSmall
+                            ).apply {
+                                rating = place.rating
+                                progressDrawable.setColorFilter(
+                                    android.graphics.Color.parseColor("#ff8800"),
+                                    PorterDuff.Mode.SRC_ATOP
+                                )
+                            }
+                            AndroidView(
+                                factory = { ratingBar },
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                            Text(
+                                text = place.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
                 }
-            ) {
-                GlideImage(
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.fillMaxSize(),
-                    imageModel = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kelimutu_2008-08-08.jpg/800px-Kelimutu_2008-08-08.jpg",
-                    circularReveal = CircularReveal(250)
-                )
             }
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                activeColor = MaterialTheme.colorScheme.onPrimary
+            )
+//            LaunchedEffect(Unit) {
+//                while (true) {
+//                    yield()
+//                    delay(2000)
+//                    pagerState.animateScrollToPage(
+//                        page = (pagerState.currentPage + 1) % (pagerState.pageCount),
+//                        animationSpec = tween(600)
+//                    )
+//                }
+//            }
         }
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
-            activeColor = MaterialTheme.colorScheme.onPrimary
-        )
     }
+}
+
+
+private fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return (1 - fraction) * start + fraction * stop
+}
+
+@OptIn(ExperimentalPagerApi::class)
+fun PagerScope.calculateCurrentOffsetForPage(page: Int): Float {
+    return (currentPage + currentPageOffset) - page
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -199,7 +285,8 @@ private fun CardContent(agent: Agent) {
                 .padding(12.dp)
         ) {
             Text(
-                text = agent.displayName.toString(), style = MaterialTheme.typography.bodyLarge.copy(
+                text = agent.displayName.toString(),
+                style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 )
             )
